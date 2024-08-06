@@ -1,30 +1,41 @@
-let exchangeRate = {
-    "IN": {
-        "IN": 1,
-        "US": 0.012,
-        "AU": 0.018,
-        "CN": 0.087,
-    },
-    "US": {
-        "US": 1,
-        "IN": 83.30,
-        "AU": 1.52,
-        "CN": 7.23,
-    },
-    "AU": {
-        "AU": 1,
-        "US": 0.66,
-        "IN": 54.82,
-        "CN": 4.76,
-    },
-    "CN": {
-        "CN": 1,
-        "US": 0.14,
-        "AU": 0.21,
-        "IN": 11.75,
-    },
+const getExchangeRate = async () => {
+    let api = await fetch('https://v6.exchangerate-api.com/v6/e641db159faea9f3b62b7676/latest/INR');
+    api = await api.json();
+    let keys = Object.keys(api.conversion_rates)
+    return keys;
 }
 
-let exchangeRateAPI = (srcCode , destCode) => {
-    return exchangeRate[srcCode][destCode];
+const makeDropdown = async () => {
+    let dropdowns = document.querySelectorAll("select")
+    let countries = await getExchangeRate()
+
+    dropdowns.forEach(dropdown => {
+        countries.forEach(element => {
+            const opt = document.createElement("option")
+            opt.innerHTML = element;
+            opt.value = element;
+            // opt.value = element
+            // opt.textContent = element
+            dropdown.appendChild(opt)
+        });
+        dropdown.addEventListener(("change"),(evt) => {
+            updateFlag(evt.target)
+        })
+    })
+}
+
+makeDropdown()
+
+const updateFlag = (element) => {
+    let counCode = element.value.slice(0,2);
+    let img = element.parentElement.querySelector("img");
+    newSrc = `https://flagsapi.com/${counCode}/flat/64.png`
+    img.src = newSrc;
+}
+
+let exchangeRateAPI = async (srcCode , destCode) => {
+    let res = await fetch(`https://v6.exchangerate-api.com/v6/e641db159faea9f3b62b7676/latest/${srcCode}`);
+    res = await res.json();
+    let conversion_rates = res.conversion_rates
+    return conversion_rates[destCode]
 }
