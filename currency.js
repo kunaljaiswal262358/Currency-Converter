@@ -14,8 +14,12 @@ const makeDropdown = async () => {
             const opt = document.createElement("option")
             opt.innerHTML = element;
             opt.value = element;
-            // opt.value = element
-            // opt.textContent = element
+            if(opt.value == "USD" && dropdown.name == "from"){
+                opt.selected = true
+            }
+            if(opt.value == "INR" && dropdown.name == "to"){
+                opt.selected = true
+            }
             dropdown.appendChild(opt)
         });
         dropdown.addEventListener(("change"),(evt) => {
